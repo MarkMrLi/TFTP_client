@@ -10,6 +10,12 @@ using namespace std;
 #define Error_code -2
 #define MAX_BUFFER_LEN 1024
 
+/*******************************
+print time in log
+eg: [ Sat Nov 04 13:38:05 2023 ]
+在log中打印时间
+*******************************/
+
 void print_time(FILE *fp)
 {
     time_t t;
@@ -21,6 +27,12 @@ void print_time(FILE *fp)
 
     return ;
 }
+/*******************************
+初始化 wincock
+创建套接字 socket
+初始化套接字 
+设置套接字的延迟时间为1s
+*******************************/
 
 SOCKET startUpsocket()
 {
@@ -64,6 +76,9 @@ SOCKET startUpsocket()
     }
     return server_socket_fd;
 }
+/*******************************
+根据IP 和 端口 port设置服务器地址
+*******************************/
 
 struct sockaddr_in get_addr(const char *ip,int port)
 {
@@ -92,6 +107,11 @@ struct sockaddr_in get_addr(const char *ip,int port)
 
 //     return buffer;
 // }
+
+
+/*******************************
+ * Make Write request packet
+*******************************/
 char *write_request_pac(const char *filename, int mode, int &datalen)
 {
     int len = strlen(filename);
@@ -115,6 +135,11 @@ char *write_request_pac(const char *filename, int mode, int &datalen)
     return buffer;
 }
 
+/*******************************
+ * read data from file
+ * Make data packet
+ * every data packet with 512 + 4 bit
+*******************************/
 int Make_data_pac(FILE *f,char *pac,int &datalen,int block)                                                                               //生成数据包
 {
     char buffer[DATA_PAC_MAX];
@@ -138,6 +163,9 @@ int Make_data_pac(FILE *f,char *pac,int &datalen,int block)                     
     return datalen;
 
 }
+/*******************************
+ * Make read request packet
+*******************************/
 char *read_request_pac(const char *filename, int mode, int &datalen)
 {
     int len = strlen(filename);
@@ -160,6 +188,9 @@ char *read_request_pac(const char *filename, int mode, int &datalen)
 
     return buffer;
 }
+/*******************************
+ * Make ACK packet
+*******************************/
 int MAKE_ACK_PAC(char * buffer,int block,int &datalen)
 {
 
@@ -173,6 +204,15 @@ int MAKE_ACK_PAC(char * buffer,int block,int &datalen)
 }
 
 
+/*******************************
+ * 实现一次完整的写入请求
+ * 实现的服务包括：
+ * 1.两种不同的传输模式netascii和octet
+ * 2.错误码反馈
+ * 3.可靠性
+ * 4.日志记录
+ * 5.显示文件上传的吞吐量
+*******************************/
 void WRITE_REQUEST(FILE * fp)
 {
     char filename[1000];
@@ -390,6 +430,15 @@ void WRITE_REQUEST(FILE * fp)
     WSACleanup();
 }
 
+/*******************************
+ * 实现一次完整的读取请求
+ * 实现的服务包括：
+ * 1.两种不同的传输模式netascii和octet
+ * 2.错误码反馈
+ * 3.可靠性
+ * 4.日志记录
+ * 5.显示文件下载的吞吐量
+*******************************/
 void READ_REQUEST(FILE * fp)
 {
     char filename[1000];
@@ -609,6 +658,10 @@ void READ_REQUEST(FILE * fp)
     closesocket(sock);
     WSACleanup();
 }
+
+/*******************************
+ * 菜单栏
+*******************************/
 void ShowMenu() {
 cout<<"  __  __"<<endl;
 cout<<" / / / /___  __"<<endl;
@@ -623,6 +676,8 @@ cout<<"  /_/ \\____/_/ "<<endl;
     cout << "3. Exit" << endl;
     cout << " (1/2/3): ";
 }
+
+/**********************************************************************/
 
 int main() {
     FILE* fp = fopen("TFTP_client.log", "a");
