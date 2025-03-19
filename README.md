@@ -16,7 +16,7 @@ A simple TFTP_client
 - WRITE_REQUEST() 一次完整的写入请求
 - READ_REQUEST() 实现一次完整的读取请求
 - ShowMenu() 展示菜单栏
-- TODOLIST
+- TODO
 
 以下是上述代码中模块之间的接口说明和模块划分的简化描述：
 
